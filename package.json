@@ -1,6 +1,6 @@
 {
   "name": "color-changer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A color conversion tool to convert between color types for web css and javascript.",
   "main": "index.js",
   "type":"module",
@@ -15,7 +15,14 @@
     "color",
     "convert",
     "color-changer",
-    "conversion"
+    "conversion",
+    "rgb",
+    "hex",
+    "hsl",
+    "hsv",
+    "hwb",
+    "ncol",
+    "cmyk"
   ],
   "author": "Jonathan Wheeler",
   "license": "MIT",
