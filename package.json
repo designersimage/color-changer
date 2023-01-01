@@ -1,0 +1,26 @@
+{
+  "name": "color-changer",
+  "version": "0.0.1",
+  "description": "A color conversion tool to convert between color types for web css and javascript.",
+  "main": "index.js",
+  "type":"module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/designersimage/color-changer.git"
+  },
+  "keywords": [
+    "color",
+    "convert",
+    "color-changer",
+    "conversion"
+  ],
+  "author": "Jonathan Wheeler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/designersimage/color-changer/issues"
+  },
+  "homepage": "https://github.com/designersimage/color-changer#readme"
+}

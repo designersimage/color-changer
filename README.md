@@ -1,2 +1,1 @@
-# colorize-js
 # color-changer
