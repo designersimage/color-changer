@@ -275,9 +275,9 @@ Color.prototype = {
             blue : this.rgb.b,
             hue : this.hsl.h,
             sat : this.hsl.s,
-            lightness : this.hsl.l,
-            whiteness : this.hwb.w,
-            blackness : this.hwb.b,
+            light : this.hsl.l,
+            white : this.hwb.w,
+            black : this.hwb.b,
             cyan : this.cmyk.c,
             magenta : this.cmyk.m,
             yellow : this.cmyk.y,
@@ -299,9 +299,9 @@ Color.prototype = {
             blue : 0,
             hue : 0,
             sat : 0,
-            lightness : 0,
-            whiteness : 0,
-            blackness : 0,
+            light : 0,
+            white : 0,
+            black : 0,
             cyan : 0,
             magenta : 0,
             yellow : 0,
@@ -324,11 +324,11 @@ Color.prototype = {
     },
 
     isLight: function() {
-        return this.lightness() > 50
+        return this.brightness() > 50
     },
 
     isDark: function() {
-        return this.lightness() <= 50
+        return this.brightness() <= 50
     },
 
     contrast: function(color) {
@@ -345,7 +345,7 @@ Color.prototype = {
         return (y1 + 0.05) / (y2 + 0.05);
     },
 
-    lightness: function() {
+    brightness: function() {
         let l = this.luminance();
         if ( l <= (216/24389)) {        // The CIE standard states 0.008856 but 216/24389 is the intent for 0.008856451679036
             return l * (24389/27);      // The CIE standard states 903.3, but 24389/27 is the intent, making 903.296296296296296
@@ -370,9 +370,9 @@ Color.prototype = {
             blue : Number(this.elements.blue.toFixed(0)),
             hue : Number(this.elements.hue.toFixed(0)),
             sat : Number(this.elements.sat.toFixed(2)),
-            lightness : Number(this.elements.lightness.toFixed(2)),
-            whiteness : Number(this.elements.whiteness.toFixed(2)),
-            blackness : Number(this.elements.blackness.toFixed(2)),
+            light : Number(this.elements.light.toFixed(2)),
+            white : Number(this.elements.white.toFixed(2)),
+            black : Number(this.elements.black.toFixed(2)),
             cyan : Number(this.elements.cyan.toFixed(2)),
             magenta : Number(this.elements.magenta.toFixed(2)),
             yellow : Number(this.elements.yellow.toFixed(2)),

@@ -1,6 +1,6 @@
 {
   "name": "color-changer",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A color conversion tool to convert between color types for web css and javascript.",
   "main": "index.js",
   "type":"module",
