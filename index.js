@@ -14,26 +14,15 @@
  * @author Jonathan Wheeler <jonathan@desginersimage.io>
  */
 
-class Color
+function Color(color)
 {
-    /**
-     * Constructor for Color Class. Takes in a color as a css
-     * formatted string and creates a color object.
-     * 
-     * @param String color 
-     */
-    constructor(color) {
-        // Take in a string or object
-        let type = typeof color;
-        if (type === 'string') {
-            this.getColorString(color);
-        } else if (type === 'object') {
-            this.getColorObject(color);
-            // this.attachValues(this.getColorObject(color));
-        }
-    }
+    if (!(this instanceof Color)) { return new Color(color); }
+    if (typeof color === "object") {return color; }
+    this.getColorString(color);
+}
 
-    getColorString(color) {
+Color.prototype = {
+    getColorString: function(color) {
         let x, y, type, arr = [], arrLength, i, opacity, match, result, sep, alpha, hue, sat, colorName = undefined, colornames = [], colorhexs = [];
         
         // Check if color is a ncol value
@@ -61,7 +50,7 @@ class Color
         }
 
         // Intialize Base Values
-        alpha = 1;
+        alpha = undefined;
         arrLength = 3;
         opacity = false
 
@@ -84,55 +73,31 @@ class Color
         switch (type) {
             case 'hex':
                 let hexString = color.split('#')[1];
+                
                 if (hexString.length === 3) {
-                    hexString = hexString.substring(0,1) + hexString.substring(0,1) + hexString.substring(1,1) + hexString.substring(1,1) + hexString.substring(2,1) + hexString.substring(2,1);
+                    let byte1, byte2, byte3;
+                    byte1 = `${hexString[0]}${hexString[0]}`;
+                    byte2 = `${hexString[1]}${hexString[1]}`;
+                    byte3 = `${hexString[2]}${hexString[2]}`;
+                    hexString = `${byte1}${byte2}${byte3}`;
                 } else if (hexString.length === 4) {
-                    hexString = hexString.substring(0,1) + hexString.substring(0,1) + hexString.substring(1,1) + hexString.substring(1,1) + hexString.substring(2,1) + hexString.substring(2,1) + hexString.substring(3,1) + hexString.substring(3,1);
+                    let byte1, byte2, byte3, byte4;
+                    byte1 = `${hexString[0]}${hexString[0]}`;
+                    byte2 = `${hexString[1]}${hexString[1]}`;
+                    byte3 = `${hexString[2]}${hexString[2]}`;
+                    byte4 = `${hexString[3]}${hexString[3]}`;
+                    hexString = `${byte1}${byte2}${byte3}${byte4}`;
                 }
-
-                for (i = 0; i < hexString.length; i++) {
-                    if (!this.isHex(hexString.substr(i, 1))) {
-                        this.elements = this.emptyObj();
-                        return this;
-                    }
+                
+                if (!this.isHex(hexString)) {
+                    this.elements = this.emptyObj();
+                    return this;
                 }
-
-                if (hexString.length === 6) {
-                    result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexString)
-                    arr[0] = parseInt(result[1], 16)
-                    arr[1] = parseInt(result[2], 16)
-                    arr[2] = parseInt(result[3], 16)
-                    for (i = 0; i < 3; i++) {
-                        if (isNaN(arr[i])) {
-                            this.elements = this.emptyObj();
-                            return this;
-                        }
-                    }
-                    this.rgb = new rgb({
-                        r : arr[0],
-                        g : arr[1],
-                        b : arr[2]
-                    });
-                } else if (hexString.length === 8) {
-                    opacity = true;
-                    result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexString)
-                    arr[0] = parseInt(result[1], 16)
-                    arr[1] = parseInt(result[2], 16)
-                    arr[2] = parseInt(result[3], 16)
-                    alpha = parseInt(result[4], 16)
-                    alpha = +(alpha / 255).toFixed(3);
-                    for (i = 0; i < 3; i++) {
-                        if (isNaN(arr[i])) {
-                            this.elements = this.emptyObj();
-                            return this;
-                        }
-                    }
-                    this.rgb = new rgb({
-                        r : arr[0],
-                        g : arr[1],
-                        b : arr[2]
-                    });
-                }
+                
+                this.hex = new hex(hexString);
+                this.rgb = new rgb(this.hex.toRgb());
+                alpha = this.rgb.a;
+                
                 break;
 
             case 'rgb':
@@ -256,31 +221,60 @@ class Color
                     return this;
                 }
         }
-        this.elements = this.colorObj(alpha, hue, sat, colorName);
+        this.colorObj(alpha, colorName);
         return this;
-    }
+    },
 
-    getColorObject(color) {
-        let keys = Object.keys(color);
-        console.log(keys)
-    }
+    getColorName: function() {
+        let hexs, colorName, colorHex, i;
+        hexs = this.getColorArr('hexs');
+        
+        for (i = 0; i < hexs.length; i++) {
+            if (this.hex.value.toLowerCase() === hexs[i].toLowerCase()) {
+                colorHex = hexs[i];
+                colorName = this.getColorArr('names')[i];
+                break;
+            }
+        }
+        return colorName
+    },
 
-    colorObj(alpha, name) {
-        if (alpha === null) {alpha = 1;}
-        this.rgb.alpha(alpha)
-        this.hsl = new hsl(this.rgb.toHsl());
-        this.hwb = new hwb(this.rgb.toHwb());
-        this.cmyk = new cmyk(this.rgb.toCmyk());
-        hue = this.hsl.h;
-        sat = this.hsl.s;
-        this.ncol = new ncol(this.hwb.toNcol());
-
-        return {
+    colorObj: function(alpha = undefined, name = undefined) {
+        if (this.rgb) this.rgb.alpha(alpha);
+        if (this.rgb && !this.hex) {
+            this.hex = new hex(this.rgb.toHex());
+            this.hex.alpha(alpha);
+        }
+        if (this.rgb && !this.hsl) {
+            this.hsl = new hsl(this.rgb.toHsl());
+            this.hsl.alpha(alpha);
+        }
+        if (this.rgb && !this.hsv) {
+            this.hsv = new hsv(this.rgb.toHsv());
+            this.hsv.alpha(alpha);
+        }
+        if (this.rgb && !this.hwb) {
+            this.hwb = new hwb(this.rgb.toHwb());
+            this.hwb.alpha(alpha);
+        }
+        if (this.rgb && !this.cmyk) {
+            this.cmyk = new cmyk(this.rgb.toCmyk());
+        }
+        if (this.hwb && !this.ncol) {
+            this.ncol = new ncol(this.hwb.toNcol());
+            this.ncol.alpha(alpha);
+        }
+        if (!name) {
+            name = this.getColorName();
+        }
+        
+        this.elements = {
+            hex: this.hex.value,
             red : this.rgb.r,
             green : this.rgb.g,
             blue : this.rgb.b,
-            hue : hue,
-            sat : sat,
+            hue : this.hsl.h,
+            sat : this.hsl.s,
             lightness : this.hsl.l,
             whiteness : this.hwb.w,
             blackness : this.hwb.b,
@@ -293,10 +287,13 @@ class Color
             name: name,
             valid : true
         };
-    }
 
-    emptyObj() {
+        return this;
+    },
+
+    emptyObj: function() {
         return {
+            hex: 0,
             red : 0,
             green : 0,
             blue : 0,
@@ -309,32 +306,283 @@ class Color
             magenta : 0,
             yellow : 0,
             black : 0,
-            opacity : 1,
+            opacity : undefined,
+            name: undefined,
             valid : false
         };
-    }
+    },
 
-    getColorArr(x) {
+    getColorArr: function(x) {
         if (x == "names") {return ['AliceBlue','AntiqueWhite','Aqua','Aquamarine','Azure','Beige','Bisque','Black','BlanchedAlmond','Blue','BlueViolet','Brown','BurlyWood','CadetBlue','Chartreuse','Chocolate','Coral','CornflowerBlue','Cornsilk','Crimson','Cyan','DarkBlue','DarkCyan','DarkGoldenRod','DarkGray','DarkGrey','DarkGreen','DarkKhaki','DarkMagenta','DarkOliveGreen','DarkOrange','DarkOrchid','DarkRed','DarkSalmon','DarkSeaGreen','DarkSlateBlue','DarkSlateGray','DarkSlateGrey','DarkTurquoise','DarkViolet','DeepPink','DeepSkyBlue','DimGray','DimGrey','DodgerBlue','FireBrick','FloralWhite','ForestGreen','Fuchsia','Gainsboro','GhostWhite','Gold','GoldenRod','Gray','Grey','Green','GreenYellow','HoneyDew','HotPink','IndianRed','Indigo','Ivory','Khaki','Lavender','LavenderBlush','LawnGreen','LemonChiffon','LightBlue','LightCoral','LightCyan','LightGoldenRodYellow','LightGray','LightGrey','LightGreen','LightPink','LightSalmon','LightSeaGreen','LightSkyBlue','LightSlateGray','LightSlateGrey','LightSteelBlue','LightYellow','Lime','LimeGreen','Linen','Magenta','Maroon','MediumAquaMarine','MediumBlue','MediumOrchid','MediumPurple','MediumSeaGreen','MediumSlateBlue','MediumSpringGreen','MediumTurquoise','MediumVioletRed','MidnightBlue','MintCream','MistyRose','Moccasin','NavajoWhite','Navy','OldLace','Olive','OliveDrab','Orange','OrangeRed','Orchid','PaleGoldenRod','PaleGreen','PaleTurquoise','PaleVioletRed','PapayaWhip','PeachPuff','Peru','Pink','Plum','PowderBlue','Purple','RebeccaPurple','Red','RosyBrown','RoyalBlue','SaddleBrown','Salmon','SandyBrown','SeaGreen','SeaShell','Sienna','Silver','SkyBlue','SlateBlue','SlateGray','SlateGrey','Snow','SpringGreen','SteelBlue','Tan','Teal','Thistle','Tomato','Turquoise','Violet','Wheat','White','WhiteSmoke','Yellow','YellowGreen']; }
         if (x == "hexs") {return ['f0f8ff','faebd7','00ffff','7fffd4','f0ffff','f5f5dc','ffe4c4','000000','ffebcd','0000ff','8a2be2','a52a2a','deb887','5f9ea0','7fff00','d2691e','ff7f50','6495ed','fff8dc','dc143c','00ffff','00008b','008b8b','b8860b','a9a9a9','a9a9a9','006400','bdb76b','8b008b','556b2f','ff8c00','9932cc','8b0000','e9967a','8fbc8f','483d8b','2f4f4f','2f4f4f','00ced1','9400d3','ff1493','00bfff','696969','696969','1e90ff','b22222','fffaf0','228b22','ff00ff','dcdcdc','f8f8ff','ffd700','daa520','808080','808080','008000','adff2f','f0fff0','ff69b4','cd5c5c','4b0082','fffff0','f0e68c','e6e6fa','fff0f5','7cfc00','fffacd','add8e6','f08080','e0ffff','fafad2','d3d3d3','d3d3d3','90ee90','ffb6c1','ffa07a','20b2aa','87cefa','778899','778899','b0c4de','ffffe0','00ff00','32cd32','faf0e6','ff00ff','800000','66cdaa','0000cd','ba55d3','9370db','3cb371','7b68ee','00fa9a','48d1cc','c71585','191970','f5fffa','ffe4e1','ffe4b5','ffdead','000080','fdf5e6','808000','6b8e23','ffa500','ff4500','da70d6','eee8aa','98fb98','afeeee','db7093','ffefd5','ffdab9','cd853f','ffc0cb','dda0dd','b0e0e6','800080','663399','ff0000','bc8f8f','4169e1','8b4513','fa8072','f4a460','2e8b57','fff5ee','a0522d','c0c0c0','87ceeb','6a5acd','708090','708090','fffafa','00ff7f','4682b4','d2b48c','008080','d8bfd8','ff6347','40e0d0','ee82ee','f5deb3','ffffff','f5f5f5','ffff00','9acd32']; }
-    }
+    },
 
-    round() {
+    isHex: function(value) {
+        let regex6 = /[0-9A-Fa-f]{6}/g;
+        let regex8 = /[0-9A-Fa-f]{8}/g;
+        return value.match(regex6) || value.match(regex8);
+    },
+
+    isLight: function() {
+        return this.lightness() > 50
+    },
+
+    isDark: function() {
+        return this.lightness() <= 50
+    },
+
+    contrast: function(color) {
+        let y1, y2, y3;
+        y1 = this.luminance();
+        y2 = color.luminance();
+        
+        //Arrange so $y1 is lightest
+        if (y1 < y2) {
+            y3 = y1;
+            y1 = y2;
+            y2 = y3;
+        }
+        return (y1 + 0.05) / (y2 + 0.05);
+    },
+
+    lightness: function() {
+        let l = this.luminance();
+        if ( l <= (216/24389)) {        // The CIE standard states 0.008856 but 216/24389 is the intent for 0.008856451679036
+            return l * (24389/27);      // The CIE standard states 903.3, but 24389/27 is the intent, making 903.296296296296296
+        } else {
+            return Math.pow(l,(1/3)) * 116 - 16;
+        }
+    },
+
+    luminance: function() {
+        let r = Number(this.rgb.r/255), g = Number(this.rgb.g/255), b = Number(this.rgb.b/255), rLin, gLin, bLin;
+        rLin = this.toLinear(r);
+        gLin = this.toLinear(g);
+        bLin = this.toLinear(b);
+        
+        return 0.2126 * rLin + 0.7152 * gLin + 0.0722 * bLin;
+    },
+
+    round: function() {
+        this.elements = {
+            red : Number(this.elements.red.toFixed(0)),
+            green : Number(this.elements.green.toFixed(0)),
+            blue : Number(this.elements.blue.toFixed(0)),
+            hue : Number(this.elements.hue.toFixed(0)),
+            sat : Number(this.elements.sat.toFixed(2)),
+            lightness : Number(this.elements.lightness.toFixed(2)),
+            whiteness : Number(this.elements.whiteness.toFixed(2)),
+            blackness : Number(this.elements.blackness.toFixed(2)),
+            cyan : Number(this.elements.cyan.toFixed(2)),
+            magenta : Number(this.elements.magenta.toFixed(2)),
+            yellow : Number(this.elements.yellow.toFixed(2)),
+            black : Number(this.elements.black.toFixed(2)),
+            ncol : this.elements.ncol.substring(0, 1) + Math.round(Number(this.elements.ncol.substring(1))),
+            opacity : this.elements.opacity ? Number(this.elements.opacity.toFixed(2)) : undefined
+        };
+
+        return this;
+    },
+
+    toLinear: function(value) {
+        if ( value <= 0.04045 ) {
+            return value / 12.92;
+        } else {
+            return Math.pow((( value + 0.055)/1.055),2.4);
+        }
+    },
+
+    setHEX: function(color) {
+
+    },
+
+    setRGB: function(color) {
+
+    },
+
+    setHSL: function(color) {
+
+    },
+
+    setHSV: function(color) {
+
+    },
+
+    setHWB: function(color) {
+
+    },
+
+    setCMYK: function(color) {
+
+    },
+
+    setNCOL: function(color) {
+
+    },
+
+    setNAME: function(color) {
 
     }
 }
 
-class rgb
+class ColorObject
 {
-    constructor({red, blue, green, alpha = 1}) {
-        this.r = red;
-        this.g = green;
-        this.b = blue;
+    alpha(alpha = undefined) {
         this.a = alpha;
+
+        return this;
     }
 
-    alpha(alpha = 1) {
-        this.a = alpha;
+    hueConv(t1, t2, hue) {
+        if (hue < 0) hue += 6;
+        if (hue >= 6) hue -= 6;
+        if (hue < 1) return (t2 - t1) * hue + t1;
+        else if(hue < 3) return t2;
+        else if(hue < 4) return (t2 - t1) * (4 - hue) + t1;
+        else return t1;
+    }
+
+    round() {
+        switch (this.constructor.name){
+            case 'rgb':
+                this.r = Number(this.r.toFixed(0));
+                this.g = Number(this.g.toFixed(0));
+                this.b = Number(this.b.toFixed(0));
+                this.a = this.a ? Number(this.a.toFixed(2)) : undefined;
+                break;
+            case 'hsl':
+                this.h = Number(this.h.toFixed(0));
+                this.s = Number(this.s.toFixed(2));
+                this.l = Number(this.l.toFixed(2));
+                this.a = this.a ? Number(this.a.toFixed(2)) : undefined;
+                break;
+            case 'hsv':
+                this.h = Number(this.h.toFixed(0));
+                this.s = Number(this.s.toFixed(2));
+                this.v = Number(this.v.toFixed(2));
+                this.a = this.a ? Number(this.a.toFixed(2)) : undefined;
+                break;
+            case 'hwb':
+                this.h = Number(this.h.toFixed(0));
+                this.w = Number(this.w.toFixed(2));
+                this.b = Number(this.b.toFixed(2));
+                this.a = this.a ? Number(this.a.toFixed(2)) : undefined;
+                break;
+            case 'cmyk':
+                this.c = Number(this.c.toFixed(2));
+                this.m = Number(this.m.toFixed(2));
+                this.y = Number(this.y.toFixed(2));
+                this.k = Number(this.k.toFixed(2));
+                break;
+            case 'ncol':
+                this.ncol = this.ncol.substring(0, 1) + Math.round(Number(this.elements.ncol.substring(1)));
+                this.w = Number(this.w.toFixed(2));
+                this.b = Number(this.b.toFixed(2));
+                this.a = Number(this.a.toFixed(2));
+                break;
+        }
+
+        return this;
+    }
+
+    toString() {
+        switch (this.constructor.name){
+            case 'hex':
+                if (this.a) {
+                    let alpha = (this.a * 255).toFixed(3).toString(16);
+                    return `#${this.value}${alpha}`;
+                }
+                return `#${this.value}`;
+            case 'rgb':
+                if (this.a) return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+                return `rgb(${this.r}, ${this.g}, ${this.b})`;
+            case 'hsl':
+                if (this.a) return `hsla(${this.h}, ${Math.round(this.s * 100)}%, ${Math.round(this.l * 100)}%, ${this.a})`;
+                return `hsl(${this.h}, ${Math.round(this.s * 100)}%, ${Math.round(this.l * 100)}%)`;
+            case 'hsv':
+                if (this.a) return `hsva(${this.h}, ${Math.round(this.s * 100)}%, ${Math.round(this.v * 100)}%, ${this.a})`;
+                return `hsv(${this.h}, ${Math.round(this.s * 100)}%, ${Math.round(this.v * 100)}%)`;
+            case 'hwb':
+                if (this.a) return `hwba(${this.h}, ${Math.round(this.w * 100)}%, ${Math.round(this.b * 100)}%, ${this.a})`;
+                return `hwb(${this.h}, ${Math.round(this.w * 100)}%, ${Math.round(this.b * 100)}%)`;
+            case 'cmyk':
+                return `cmyk(${Math.round(this.c)}%, ${Math.round(this.m)}%, ${Math.round(this.y)}%, ${Math.round(this.k)}%)`;
+            case 'ncol':
+                if (this.a) return `ncola(${this.ncol}, ${Math.round(this.w * 100)}%, ${Math.round(this.b * 100)}%, ${this.a})`;
+                return `ncol(${this.ncol}, ${Math.round(this.w * 100)}%, ${Math.round(this.b * 100)}%)`;
+        }
+    }
+}
+
+class hex extends ColorObject
+{
+    constructor(value, alpha = undefined) {
+        super();
+        let result, a;
+        if (value.length === 6) {
+            this.value = value;
+            this.a = alpha;
+        } else if (value.length === 8) {
+            result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value)
+            this.value = `${result[1]}${result[2]}${result[3]}`
+            a = parseInt(result[4], 16)
+            this.a = +(a / 255).toFixed(3);
+        }
+    }
+
+    toRgb() {
+        let result, alpha, arr = [];
+        if (this.value.length === 6) {
+            result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(this.value)
+            arr[0] = parseInt(result[1], 16)
+            arr[1] = parseInt(result[2], 16)
+            arr[2] = parseInt(result[3], 16)
+            
+            return {
+                r : arr[0],
+                g : arr[1],
+                b : arr[2]
+            };
+
+        } else if (this.value.length === 8) {
+            result = /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(this.value)
+            arr[0] = parseInt(result[1], 16)
+            arr[1] = parseInt(result[2], 16)
+            arr[2] = parseInt(result[3], 16)
+            alpha = parseInt(result[4], 16)
+            alpha = +(alpha / 255).toFixed(3);
+            
+            return {
+                r: arr[0],
+                g: arr[1],
+                b: arr[2],
+                a: alpha
+            };
+        }
+    }
+}
+
+class rgb extends ColorObject
+{
+    constructor({r, g, b, a = undefined}) {
+        super();
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
+    toHex() {
+        let byte1, byte2, byte3, byte4;
+        byte1 = this.r.toString(16);
+        byte2 = this.g.toString(16);
+        byte3 = this.b.toString(16);
+        if(this.a) {
+            byte4 = (this.a * 255).toFixed(3).toString(16);
+            return `${byte1}${byte2}${byte3}${byte4}`;
+        }
+
+        return `${byte1}${byte2}${byte3}`;
     }
 
     toHsl() {
@@ -403,7 +651,7 @@ class rgb
         if (min == max) {
           s = 0;
         } else {
-          if (l < 0.5) {
+          if (v < 0.5) {
             s = (max - min) / (max + min);
           } else {
             s = (max - min) / (2 - max - min);
@@ -487,26 +735,14 @@ class rgb
     }
 }
 
-class hsl
+class hsl extends ColorObject
 {
-    constructor({hue, saturation, lightness, alpha = 1}) {
-        this.h = hue;
-        this.s = saturation;
-        this.l = lightness;
-        this.a = alpha;
-    }
-
-    alpha(alpha = 1) {
-        this.a = alpha;
-    }
-
-    hueConv(t1, t2, hue) {
-        if (hue < 0) hue += 6;
-        if (hue >= 6) hue -= 6;
-        if (hue < 1) return (t2 - t1) * hue + t1;
-        else if(hue < 3) return t2;
-        else if(hue < 4) return (t2 - t1) * (4 - hue) + t1;
-        else return t1;
+    constructor({h, s, l, a = undefined}) {
+        super();
+        this.h = h;
+        this.s = s;
+        this.l = l;
+        this.a = a;
     }
 
     toRgb() {
@@ -526,26 +762,14 @@ class hsl
     }
 }
 
-class hsv
+class hsv extends ColorObject
 {
-    constructor({hue, saturation, value, alpha = 1}) {
-        this.h = hue;
-        this.s = saturation;
-        this.v = value;
-        this.a = alpha;
-    }
-
-    alpha(alpha = 1) {
-        this.a = alpha;
-    }
-
-    hueConv(t1, t2, hue) {
-        if (hue < 0) hue += 6;
-        if (hue >= 6) hue -= 6;
-        if (hue < 1) return (t2 - t1) * hue + t1;
-        else if(hue < 3) return t2;
-        else if(hue < 4) return (t2 - t1) * (4 - hue) + t1;
-        else return t1;
+    constructor({h, s, v, a = undefined}) {
+        super();
+        this.h = h;
+        this.s = s;
+        this.v = v;
+        this.a = a;
     }
 
     toRgb() {
@@ -565,30 +789,18 @@ class hsv
     }
 }
 
-class hwb
+class hwb extends ColorObject
 {
-    constructor({hue, whiteness, blackness, alpha = 1}) {
-        this.h = hue;
-        this.w = whiteness;
-        this.b = blackness;
-        this.a = alpha;
+    constructor({h, w, b, a = undefined}) {
+        super();
+        this.h = h;
+        this.w = w;
+        this.b = b;
+        this.a = a;
     }
 
-    alpha(alpha = 1) {
-        this.a = alpha
-    }
-
-    hueConv(t1, t2, hue) {
-        if (hue < 0) hue += 6;
-        if (hue >= 6) hue -= 6;
-        if (hue < 1) return (t2 - t1) * hue + t1;
-        else if(hue < 3) return t2;
-        else if(hue < 4) return (t2 - t1) * (4 - hue) + t1;
-        else return t1;
-    }
-
-    toRgb(hue, white, black) {
-        let i, rgb, rgbArr = [], tot, t1, t2, r, g, b, hue, l = 1, s = 0.50;
+    toRgb() {
+        let i, rgbArr = [], tot, t1, t2, r, g, b, hue, white = this.w, black = this.b, l = 1, s = 0.50;
         hue = this.h / 60;
         if ( l <= 0.5 ) {
           t2 = l * (s + 1);
@@ -606,8 +818,8 @@ class hwb
         rgbArr[2] = b / 255;
         tot = white + black;
         if (tot > 1) {
-          white = Number((white / tot).toFixed(2));
-          black = Number((black / tot).toFixed(2));
+          white = Number((this.w / tot).toFixed(2));
+          black = Number((this.b / tot).toFixed(2));
         }
         for (i = 0; i < 3; i++) {
           rgbArr[i] *= (1 - (white) - (black));
@@ -634,13 +846,14 @@ class hwb
     }
 }
 
-class cmyk
+class cmyk extends ColorObject
 {
-    constructor({cyan, magenta, yellow, black}) {
-        this.c =-cyan;
-        this.m = magenta;
-        this.y = yellow;
-        this.k = black;
+    constructor({c, m, y, k}) {
+        super();
+        this.c = c;
+        this.m = m;
+        this.y = y;
+        this.k = k;
     }
 
     toRgb() {
@@ -650,24 +863,44 @@ class cmyk
         b = 255 - ((Math.min(1, this.y * (1 - this.k) + this.k)) * 255);
         return {r, g, b};
     }
-
-    toHsl() {}
-
-    toHsv() {}
-    
-    toHwb() {}
-
-    toNcol() {}
 }
 
-class ncol
+class ncol extends ColorObject
 {
-    constructor({ncol, whiteness, blackness}) {
+    constructor({ncol, w, b, a = 1}) {
+        super();
         this.ncol = ncol;
-        this.w = whiteness;
-        this.b = blackness;
+        this.w = w;
+        this.b = b;
+        this.a = a;
+    }
+
+    toRgb() {
+        let letter, percent, h, hwhbl;
+        h = this.ncol;
+        if (isNaN(this.ncol.substr(0,1))) {
+          letter = this.ncol.substr(0,1).toUpperCase();
+          percent = this.ncol.substr(1);
+          if (percent === "") {percent = 0;}
+          percent = Number(percent);
+          if (isNaN(percent)) {return false;}
+          if (letter == "R") {h = 0 + (percent * 0.6);}
+          if (letter == "Y") {h = 60 + (percent * 0.6);}
+          if (letter == "G") {h = 120 + (percent * 0.6);}
+          if (letter == "C") {h = 180 + (percent * 0.6);}
+          if (letter == "B") {h = 240 + (percent * 0.6);}
+          if (letter == "M") {h = 300 + (percent * 0.6);}
+          if (letter == "W") {
+            h = 0;
+            white = 1 - (percent / 100);
+            black = (percent / 100);
+          }
+        }
+
+        hwhbl = new hwb(h, white, black)
+
+        return new hwb(h, white, black).toRgb();
     }
 }
-
 
 export default Color;
