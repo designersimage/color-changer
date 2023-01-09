@@ -563,7 +563,7 @@ Color.prototype = {
 
             let {arr, arrLength, opacity} = getBaseValues(color);
 
-            while (arr.length < arrLength) {arr.push("1"); }
+            while (arr.length < arrLength) {arr.push("1"); };
 
             for (i = 0; i < arrLength; i++) {
                 if (i < 3) {
@@ -1945,7 +1945,7 @@ function percentToRGBValue(percent) {
         value = Number(value / 100);
         value = Math.round(value * 255);
     } else {
-        value = Math.round(value * 255);
+        value = Number(value);
     }
     
 
