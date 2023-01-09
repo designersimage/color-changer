@@ -196,6 +196,9 @@ Get the specific color object or all of the color elements.
 ## CSS Strings
 Each color object can be returned as a string with rounded values.
 
+    let color = new Color();
+    color.setHEX('#8fbc8f');
+    
     console.log(color.hsl.string())     // hsl(120, 25%, 65%)
 
 ## Luminance
