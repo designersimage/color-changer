@@ -1,6 +1,6 @@
 {
   "name": "color-changer",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A zero-dependancy color modification library to convert between color types and modify color attributes for web, css, and javascript.",
   "main": "index.js",
   "type":"module",
@@ -14,8 +14,12 @@
   "keywords": [
     "color",
     "convert",
+    "color-js",
+    "color-convert",
     "color-changer",
     "conversion",
+    "javascript",
+    "css",
     "rgb",
     "hex",
     "hsl",

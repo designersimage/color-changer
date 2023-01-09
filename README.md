@@ -116,66 +116,66 @@ All percentage values may be represented as a decimal value 0.67 or as a percent
 Set the color by color specification using the following setters. CSS strings, arrays, and objects are allowed using the following format. 
 
     /* RGB */
-    color.setRGB('rgb(143, 188, 143)');                                 // String
+    color.setRGB('rgb(143, 188, 143)');
     color.setRGB('rgba(143, 188, 143, 0.67)')
-    color.setRGB([143, 188, 143]);                                      // Array
+    color.setRGB([143, 188, 143]);
     color.setRGB([143, 188, 143, 0.67]);
-    color.setRGB({r: 143, g: 188, b: 143});                             // Object
+    color.setRGB({r: 143, g: 188, b: 143});
     color.setRGB({r: 143, g: 188, b: 143, a: 0.67});
 
     /* HEX */
-    color.setHEX('#8fbc8f');                                            // String
+    color.setHEX('#8fbc8f');
     color.setHEX('#8fbc8fab');
-    color.setHEX(['#8fbc8f']);                                          // Array
+    color.setHEX(['#8fbc8f']);
     color.setHEX(['#8fbc8f', 0.67]);
-    color.setHEX({value: '#8fbc8f'});                                   // Object
-    color.setHEX({value: '#8fbc8f', a: 0.67})
+    color.setHEX({value: '#8fbc8f'});
+    color.setHEX({value: '#8fbc8f', a: 0.67});
 
     /* HSL */
-    color.setHSL('hsl(120, 25%, 65%)');                                 // String
+    color.setHSL('hsl(120, 25%, 65%)');
     color.setHSL('hsla(120, 25%, 65%, 0.67)');
-    color.setHSL([120, '25%', '65%']);                                  // Array
+    color.setHSL([120, '25%', '65%']);
     color.setHSL([120, '25%', '65%', 0.67]);
-    color.setHSL({h: 120, s: '25%', l: '65%'});                         // Object
+    color.setHSL({h: 120, s: '25%', l: '65%'});
     color.setHSL({h: 120, s: '25%', l: '65%', a: 0.67});
 
     /* HSV */
-    color.setHSV('hsv(120, 25%, 65%)');                                 // String
+    color.setHSV('hsv(120, 25%, 65%)');
     color.setHSV('hsva(120, 25%, 65%, 0.67)');
-    color.setHSV([120, '25%', '65%']);                                  // Array
+    color.setHSV([120, '25%', '65%']);
     color.setHSV([120, '25%', '65%', 0.67]);
-    color.setHSV({h: 120, s: '25%', v: '65%'});                         // Object
+    color.setHSV({h: 120, s: '25%', v: '65%'});
     color.setHSV({h: 120, s: '25%', v: '65%', a: 0.67});
 
     /* HWB */
-    color.setHWB('hwb(120, 56%, 26%)');                                 // String
+    color.setHWB('hwb(120, 56%, 26%)');
     color.setHWB('hwba(120, 56%, 26%, 0.67)');
-    color.setHWB([120, '56%', '26%']);                                  // Array
+    color.setHWB([120, '56%', '26%']);
     color.setHWB([120, '56%', '26%', 0.67]);
-    color.setHWB({h: 120, w: '56%', b: '26%'});                         // Object
+    color.setHWB({h: 120, w: '56%', b: '26%'});
     color.setHWB({h: 120, w: '56%', b: '26%', a: 0.67});
 
     /* NCOL */  
-    color.setNCOL('ncol('G0', 56%, 26%)');                              // String
+    color.setNCOL('ncol('G0', 56%, 26%)');
     color.setNCOL('ncola('G0', 56%, 26%, 0.67)');
-    color.setNCOL(['G0', '56%', '26%']);                                // Array
+    color.setNCOL(['G0', '56%', '26%']);
     color.setNCOL(['G0', '56%', '26%', 0.67]);
-    color.setNCOL({ncol: 'G0', w: '56%', b: '26%'});                    // Object
+    color.setNCOL({ncol: 'G0', w: '56%', b: '26%'});
     color.setNCOL({ncol: 'G0', w: '56%', b: '26%', a: 0.67});
 
     /* CMYK */
-    color.setCMYK('cmyk(24%, 0%, 24%, 26%)');                           // String
+    color.setCMYK('cmyk(24%, 0%, 24%, 26%)');
     color.setCMYK('cmyk(24%, 0%, 24%, 26%, 0.67)');
-    color.setCMYK(['24%', '0%', '24%', '26%']);                         // Array
+    color.setCMYK(['24%', '0%', '24%', '26%']);
     color.setCMYK(['24%', '0%', '24%', '26%', 0.67]);
-    color.setCMYK({c: '24%', m: '0%', y: '24%', k: '26%'});             // Object
+    color.setCMYK({c: '24%', m: '0%', y: '24%', k: '26%'});
     color.setCMYK({c: '24%', m: '0%', y: '24%', k: '26%', a: 0.67});
 
     /* NAME */
-    color.setNAME('DarkSeaGreen');                                      // String
-    color.setNAME(['DarkSeaGreen']);                                    // Array
+    color.setNAME('DarkSeaGreen');
+    color.setNAME(['DarkSeaGreen']);
     color.setNAME(['DarkSeaGreen', 0.67]);
-    color.setNAME({name: 'DarkSeaGreen'});                              // Object
+    color.setNAME({name: 'DarkSeaGreen'});
     color.setNAME({name: 'DarkSeaGreen', a: 0.67});
 
 ## Getters
