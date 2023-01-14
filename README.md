@@ -1,6 +1,6 @@
 # color-changer
 
-A zero-dependancy color modification library to convert between color types and modify color attributes for web, css, and javascript. This tool can take in a css color string or an object and convert it between several different color specifications.
+A zero-dependancy color modification library to convert between color types and modify color attributes for web, css, and javascript. This tool can take in a css color string or an object and convert it between several different color specifications including `hex`, `rgb`, `ryb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ncol`, `xyz`, and `lab`.
 
     import Color from 'color-changer';
 
@@ -104,13 +104,17 @@ All percentage values may be represented as a decimal value 0.67 or as a percent
     // String
     let color = new Color('DarkSeaGreen');
 
-    // Object = new Color({name: 'DarkSeaGreen', a: 0.67})
+    // Object 
+    let color = new Color({name: 'DarkSeaGreen', a: 0.67})
 
 # Usage
     import Color from 'color-changer';
 
     // Instantiate Empty Color Object
     let color = new Color();
+
+    // Instatiate Color Object w/ color
+    let color = new Color('#3F589F');
 
 ## Setters
 Set the color by color specification using the following setters. CSS strings, arrays, and objects are allowed using the following format. 
@@ -183,12 +187,16 @@ Get the specific color object or all of the color elements.
 
     /* Colors */
     let rgb = color.rgb;
+    let ryb = color.ryb;
     let hex = color.hex;
     let hsl = color.hsl;
     let hsv = color.hsv;
     let hwb = color.hwb;
     let ncol = color.ncol;
     let cmyk = color.cmyk;
+    let xyz = color.xyz;
+    let lab = color.lab;
+    let ansi = color.ansi256;
     
     /* Elements */
     let elements = color.elements;
@@ -218,6 +226,8 @@ Get the contrast ratio of two colors base on the [WCAG Contrast Ratio](https://w
 
     /* (Same Color) 1 <-> 21 (Black/White) */
     console.log(color.contrast(Color('black'))); // 9.757849865193812
+    /* or */
+    console.log(color.contrast('black')); // 9.757849865193812
 
 ## Dark or Light
 Get a boolean return value of whether a color is dark or light.
@@ -227,6 +237,42 @@ Get a boolean return value of whether a color is dark or light.
 
     console.log(color.isDark())     // false
     console.log(color.isLight())    // true
+
+## Color Manipulation
+Manipulate to color object directly by altering saturation, lightness, opacity, or hue, negate the color, convert to greyscale, or mix it with another color.
+
+    let color1 = new Color('red'),
+        color2 = new Color('yellow');
+
+    /* Manipulate saturation */
+    color1.saturate('22%');
+    color1.desaturate(.22);
+
+    /* Manipulate hue */
+    color1.rotate(90);
+    color1.rotate('-240deg');
+
+    /* Manipulate shade & tint */
+    color1.lighten(.44);
+    color1.darken('44%');
+
+    /* Manipulate opacity */
+    color1.fade(0.5);
+    color1.opaquer('20%');
+
+    /* Negate color */
+    color1.negate();
+
+    /* Convert to greyscale */
+    color1.greyscale();
+
+    /* Mix another color */
+    color1.mix(color2);
+    color1.mix(Color('blue'));
+
+    console.log(color1);
+
+    
 
 # Credits
 This library was inspired by [W3 Color Converter](http://www-db.deis.unibo.it/courses/TW/DOCS/w3schools/colors/colors_converter.asp-color=ncs(0510-G90Y).html#gsc.tab=0) and [color](https://github.com/Qix-/color).
