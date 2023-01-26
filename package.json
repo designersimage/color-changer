@@ -1,7 +1,7 @@
 {
   "name": "color-changer",
-  "version": "0.1.0",
-  "description": "A zero-dependancy color modification library to convert between color types and modify color attributes for web, css, and javascript.",
+  "version": "1.0.0",
+  "description": "A zero-dependancy, light-weight color modification library to convert between color types and modify color attributes for javascript.",
   "main": "index.js",
   "type":"module",
   "scripts": {
@@ -22,15 +22,8 @@
     "css",
     "hex",
     "rgb",
-    "ryb",
     "hsl",
-    "hsv",
-    "hwb",
-    "ncol",
-    "cmyk",
-    "xyz",
-    "lab",
-    "ansi256"
+    "hsv"
   ],
   "author": "Jonathan Wheeler",
   "license": "MIT",

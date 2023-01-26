@@ -1,6 +1,6 @@
 # color-changer
 
-A zero-dependancy color modification library to convert between color types and modify color attributes for web, css, and javascript. This tool can take in a css color string or an object and convert it between several different color specifications including `hex`, `rgb`, `ryb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ncol`, `xyz`, and `lab`.
+A zero-dependancy, light-weight color modification library to convert between color types and modify color attributes for javascript. This tool can take in a css color string or an object and convert it between several different color specifications including `hex`, `rgb`, `hsl`, and `hsv`.
 
     import Color from 'color-changer';
 
@@ -18,7 +18,6 @@ A zero-dependancy color modification library to convert between color types and 
 
 # Instantiate
 All percentage values may be represented as a decimal value 0.67 or as a percentage string '67%'.
-
 
     // Empty Color Object
     let color = new Color();
@@ -66,39 +65,6 @@ All percentage values may be represented as a decimal value 0.67 or as a percent
     let color = new Color({h: 120, s: '25%', v: '65%'});
     /* -- or -- */
     let color = new Color({h: 120, s: '25%', v: '65%', a: 0.67});
-
-### HWB
-    // String
-    let color = new Color('hwb(120, 56%, 26%)');
-    /* -- or -- */
-    let color = new Color('hwba(120, 56%, 26%, 0.67));
-
-    // Object
-    let color = new Color({h: 120, w: '56%', b: '26%'});
-    /* -- or -- */
-    let color = new Color({h: 120, w: '56%', b: '26%', a: 0.67});
-
-### NCOL
-    // String
-    let color = new Color('ncol(G0, 56%, 26%)');
-    /* -- or -- */
-    let color = new Color('ncola(G0, 56%, 26%, 0.67));
-
-    // Object
-    let color = new Color({ncol: 'G0', w: '56%', b: '26%'});
-    /* -- or -- */
-    let color = new Color({ncol: 'G0', w: '56%', b: '26%', a: 0.67});
-
-### CMYK
-    // String
-    let color = new Color('cmyk(24%, 0%, 24%, 26%)');
-    /* -- or -- */
-    let color = new Color('cmyk(24%, 0%, 24%, 26%, 0.67));
-
-    // Object
-    let color = new Color({c: '24%', m: '0%', y: '24%', k: '26%'});
-    /* -- or -- */
-    let color = new Color({c: '24%', m: '0%', y: '24%', k: '26%', a: 0.67});
 
 ### NAME
     // String
@@ -151,30 +117,6 @@ Set the color by color specification using the following setters. CSS strings, a
     color.setHSV({h: 120, s: '25%', v: '65%'});
     color.setHSV({h: 120, s: '25%', v: '65%', a: 0.67});
 
-    /* HWB */
-    color.setHWB('hwb(120, 56%, 26%)');
-    color.setHWB('hwba(120, 56%, 26%, 0.67)');
-    color.setHWB([120, '56%', '26%']);
-    color.setHWB([120, '56%', '26%', 0.67]);
-    color.setHWB({h: 120, w: '56%', b: '26%'});
-    color.setHWB({h: 120, w: '56%', b: '26%', a: 0.67});
-
-    /* NCOL */  
-    color.setNCOL('ncol('G0', 56%, 26%)');
-    color.setNCOL('ncola('G0', 56%, 26%, 0.67)');
-    color.setNCOL(['G0', '56%', '26%']);
-    color.setNCOL(['G0', '56%', '26%', 0.67]);
-    color.setNCOL({ncol: 'G0', w: '56%', b: '26%'});
-    color.setNCOL({ncol: 'G0', w: '56%', b: '26%', a: 0.67});
-
-    /* CMYK */
-    color.setCMYK('cmyk(24%, 0%, 24%, 26%)');
-    color.setCMYK('cmyk(24%, 0%, 24%, 26%, 0.67)');
-    color.setCMYK(['24%', '0%', '24%', '26%']);
-    color.setCMYK(['24%', '0%', '24%', '26%', 0.67]);
-    color.setCMYK({c: '24%', m: '0%', y: '24%', k: '26%'});
-    color.setCMYK({c: '24%', m: '0%', y: '24%', k: '26%', a: 0.67});
-
     /* NAME */
     color.setNAME('DarkSeaGreen');
     color.setNAME(['DarkSeaGreen']);
@@ -187,16 +129,9 @@ Get the specific color object or all of the color elements.
 
     /* Colors */
     let rgb = color.rgb;
-    let ryb = color.ryb;
     let hex = color.hex;
     let hsl = color.hsl;
     let hsv = color.hsv;
-    let hwb = color.hwb;
-    let ncol = color.ncol;
-    let cmyk = color.cmyk;
-    let xyz = color.xyz;
-    let lab = color.lab;
-    let ansi = color.ansi256;
     
     /* Elements */
     let elements = color.elements;
@@ -208,6 +143,17 @@ Each color object can be returned as a string with rounded values.
     color.setHEX('#8fbc8f');
     
     console.log(color.hsl.string())     // hsl(120, 25%, 65%)
+    console.log(color.hsv.string())     // hsv(120, 24%, 74%)
+    console.log(color.rgb.string())     // rgb(143, 188, 143)
+    console.log(color.hex.string())     // #8fbc8f
+
+    color.alpha(0.77);
+
+    console.log(color.hsl.string())     // hsla(120, 25%, 65%, 0.77)
+    console.log(color.hsv.string())     // hsva(120, 24%, 74%, 0.77)
+    console.log(color.rgb.string())     // rgba(143, 188, 143, 0.77)
+    console.log(color.hex.string())     // #8fbc8fc4
+
 
 ## Luminance
 Get the relative luminance of the color based on the [WCAG Relative Luminance](https://www.w3.org/TR/WCAG20/#relativeluminancedef) definition. 
@@ -269,10 +215,12 @@ Manipulate to color object directly by altering saturation, lightness, opacity, 
     /* Mix another color */
     color1.mix(color2);
     color1.mix(Color('blue'));
-
-    console.log(color1);
-
-    
+    /* or */
+    color1.mix(color2, 'add');  // Additive Mix
+    color1.mix(color2, 'sub');  // Subtractive Mix
+    /* or */
+    color1.mix(color2, 'add', 0.6);  // Additive Mix with 60% of color2
+    color1.mix(color2, 'sub', 0.6);  // Subtractive Mix with 60% of color2  
 
 # Credits
 This library was inspired by [W3 Color Converter](http://www-db.deis.unibo.it/courses/TW/DOCS/w3schools/colors/colors_converter.asp-color=ncs(0510-G90Y).html#gsc.tab=0) and [color](https://github.com/Qix-/color).
